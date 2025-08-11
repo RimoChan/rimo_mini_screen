@@ -46,6 +46,7 @@ class MiniScreen:
         self.ser = ser
         self.size = size
         self.data = None
+        self.touch = 65535
         self.show_counter = show_counter
         if self.show_counter:
             self.tqdm = {i: tqdm(desc=i) for i in ('发送次数', '发送大小', '处理图像次数')}
@@ -54,8 +55,17 @@ class MiniScreen:
     def __del__(self):
         self.ser.close()
 
+    def _read_adc_ch(self, ch) -> int:
+        self.ser.write(bytearray([8, ch, 0, 0, 0, 0]))
+        recv = self.ser.read(self.ser.in_waiting)
+        if not recv:
+            return 0
+        return recv[4]*256+recv[5]
+
     def _show_send(self):
         while True:
+            if t := self._read_adc_ch(9):
+                self.touch = t
             if not self.data:
                 time.sleep(0.01)
                 continue

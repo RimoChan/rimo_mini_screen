@@ -40,7 +40,13 @@ MiniScreen.show(self, img: PIL.Image.Image):
 
 这样在其中1个屏幕上显示你的图片。
 
-举个例子，比如我有1张我的照片，可以这样用:
+```python
+MiniScreen.touch: int
+```
+
+这是一个属性，用来查询屏幕上的按键是否被按下，差不多数值低于3600就是按下状态了。
+
+举个例子，比如我有1张我的照片，可以这样把它显示到小屏幕上:
 
 ```python
 import time
