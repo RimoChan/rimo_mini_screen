@@ -17,8 +17,8 @@ setuptools.setup(
     ],
     install_requires=[
         'pyserial~=3.5',
-        'numpy~=2.3',
-        'pillow~=11.3',
+        'numpy>=1.24',
+        'pillow>=10.0',
     ],
     python_requires='>=3.9',
 )
