@@ -2,7 +2,7 @@ import os
 import time
 import struct
 import threading
-from typing import TypeAlias
+from typing import TypeAlias, Optional
 
 import PIL.Image
 import numpy as np
@@ -42,11 +42,23 @@ def _img_to_RGB565(img: PIL.Image.Image) -> list[RGB565]:
 
 
 class MiniScreen:
-    def __init__(self, ser: serial.Serial, size=(160, 80), show_counter=False):
+    def __init__(self, ser: serial.Serial, size: Optional[tuple[int, int]] = None, show_counter=False):
         self.ser = ser
-        self.size = size
         self.data = None
         self.touch = 65535
+        self.ser.write(bytearray([0, 48, 32, 2, 0, 0]))
+        if size is None:
+            while True:
+                recv = self.ser.read(self.ser.in_waiting)
+                if recv:
+                    self.flash_info = recv[4]*256+recv[5]
+                    break
+                time.sleep(0.01)
+            size = {
+                34067: (160, 80),
+                34070: (320, 172),
+            }[self.flash_info]
+        self.size = size
         self.show_counter = show_counter
         if self.show_counter:
             self.tqdm = {i: tqdm(desc=i) for i in ('发送次数', '发送大小', '处理图像次数')}
